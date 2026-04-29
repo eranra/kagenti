@@ -8,12 +8,14 @@ export interface FeatureFlags {
   sandbox: boolean;
   integrations: boolean;
   triggers: boolean;
+  skills: boolean;
 }
 
 const DEFAULT_FLAGS: FeatureFlags = {
   sandbox: false,
   integrations: false,
   triggers: false,
+  skills: false,
 };
 
 let cachedFlags: FeatureFlags | null = null;
@@ -35,6 +37,7 @@ export function useFeatureFlags(): FeatureFlags {
           sandbox: data.sandbox === true,
           integrations: data.integrations === true,
           triggers: data.triggers === true,
+          skills: data.skills === true,
         };
         cachedFlags = validated;
         setFlags(validated);
