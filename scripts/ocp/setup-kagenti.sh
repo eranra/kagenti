@@ -397,6 +397,7 @@ for ns in v.get('agentNamespaces', ['team1', 'team2']):
 log_info "Step 2.5: MLflow DSC preflight + provisioning"
 if ! $KUBECTL get crd datascienceclusters.datasciencecluster.opendatahub.io &>/dev/null; then
   log_warn "RHOAI not installed (DataScienceCluster CRD not found) — skipping MLflow provisioning"
+  SKIP_MLFLOW=true
 else
   _mlflow_check_dsc
   _mlflow_create_cr
@@ -518,6 +519,37 @@ _apply_operand_crs() {
     sleep 5
   done
   log_success "Keycloak CRD available"
+
+  # Wait for ZTWIM operator CRDs — the Subscription was just created and
+  # OLM needs time to install the operator CSV which registers the CRDs.
+  log_info "Waiting for ZTWIM (SPIRE) CRDs..."
+  tries=0
+  while ! $KUBECTL get crd spiffecsidrivers.operator.openshift.io &>/dev/null; do
+    tries=$((tries + 1))
+    if [ $tries -ge 120 ]; then
+      log_error "ZTWIM CRDs not found after 10m — check operator subscription"
+      $KUBECTL get subscription -n zero-trust-workload-identity-manager 2>/dev/null || true
+      $KUBECTL get csv -n zero-trust-workload-identity-manager 2>/dev/null || true
+      return 1
+    fi
+    sleep 5
+  done
+  log_success "ZTWIM CRDs available"
+
+  # Wait for Sail Operator CRDs — Istio/ztunnel/CNI operands depend on this.
+  log_info "Waiting for Sail Operator CRDs..."
+  tries=0
+  while ! $KUBECTL get crd istios.sailoperator.io &>/dev/null; do
+    tries=$((tries + 1))
+    if [ $tries -ge 120 ]; then
+      log_error "Sail Operator CRDs not found after 10m — check operator subscription"
+      $KUBECTL get subscription -n openshift-operators 2>/dev/null || true
+      $KUBECTL get csv -n openshift-operators 2>/dev/null | grep -i sail || true
+      return 1
+    fi
+    sleep 5
+  done
+  log_success "Sail Operator CRDs available"
 
   log_info "Applying operand CRs..."
   helm get hooks kagenti-deps -n kagenti-system 2>/dev/null | python3 -c "
