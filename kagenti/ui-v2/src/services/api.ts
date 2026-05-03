@@ -205,6 +205,7 @@ export const agentService = {
         configMapKeyRef?: { name: string; key: string };
       };
     }>;
+    skills?: string[];
     // Workload type
     workloadType?: 'deployment' | 'statefulset' | 'job' | 'sandbox';
     // New fields for deployment method
@@ -328,6 +329,7 @@ export interface AgentConfigFromBuild {
       configMapKeyRef?: { name: string; key: string };
     };
   }>;
+  skills?: string[];
   servicePorts?: Array<{
     name: string;
     port: number;
@@ -434,6 +436,7 @@ export const shipwrightService = {
           configMapKeyRef?: { name: string; key: string };
         };
       }>;
+      skills?: string[];
       servicePorts?: Array<{
         name: string;
         port: number;
