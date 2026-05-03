@@ -2212,9 +2212,9 @@ def _load_agent_skill_summaries(
         )
     except ApiException as exc:
         logger.warning(
-            "Failed to list skills for agent card generation in namespace '%s': %s",
-            namespace,
+            "Failed to list skills for agent card generation: %s",
             exc,
+            extra={"namespace": namespace},
         )
         return []
 
