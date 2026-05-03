@@ -954,9 +954,7 @@ class TestSpireLabel:
         env_by_name = {env["name"]: env["value"] for env in container["env"]}
         assert env_by_name["SKILL_FOLDERS"] == f"{AGENT_SKILLS_MOUNT_ROOT}/summarizer"
 
-        skill_volume = next(
-            volume for volume in pod_spec["volumes"] if volume["name"] == "skill-0"
-        )
+        skill_volume = next(volume for volume in pod_spec["volumes"] if volume["name"] == "skill-0")
         assert skill_volume["configMap"]["name"] == "summarizer"
 
         skill_mount = next(
@@ -1004,13 +1002,10 @@ class TestSpireLabel:
 
         env_by_name = {env["name"]: env["value"] for env in container["env"]}
         assert env_by_name["SKILL_FOLDERS"] == (
-            f"{AGENT_SKILLS_MOUNT_ROOT}/summarizer,"
-            f"{AGENT_SKILLS_MOUNT_ROOT}/my-custom-skill"
+            f"{AGENT_SKILLS_MOUNT_ROOT}/summarizer,{AGENT_SKILLS_MOUNT_ROOT}/my-custom-skill"
         )
 
-        mount_paths = {
-            mount["name"]: mount["mountPath"] for mount in container["volumeMounts"]
-        }
+        mount_paths = {mount["name"]: mount["mountPath"] for mount in container["volumeMounts"]}
         assert mount_paths["skill-0"] == f"{AGENT_SKILLS_MOUNT_ROOT}/summarizer"
         assert mount_paths["skill-1"] == f"{AGENT_SKILLS_MOUNT_ROOT}/my-custom-skill"
 
