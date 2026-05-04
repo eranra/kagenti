@@ -2211,10 +2211,12 @@ def _load_agent_skill_summaries(
             label_selector=f"{SKILL_TYPE_LABEL}={SKILL_TYPE_VALUE}",
         )
     except ApiException as exc:
+        # Sanitize namespace to prevent log injection
+        safe_namespace = namespace.replace("\n", "\\n").replace("\r", "\\r")
         logger.warning(
             "Failed to list skills for agent card generation: %s",
             exc,
-            extra={"namespace": namespace},
+            extra={"namespace": safe_namespace},
         )
         return []
 
