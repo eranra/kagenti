@@ -60,7 +60,7 @@ This guide uses the example repository:
 
 8. Wait for the UI to auto-import the skill content and additional files.
 9. Confirm that `SKILL.md` was imported.
-10. Click **Create Skill**.
+10. Click **Import Skill**.
 
 After the skill is created, the skill should appear in the skill catalog for the selected namespace.
 
